@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
-public class LevelManager : MonoBehaviour
+public class LevelManager: MonoBehaviour
 {
-    static event Action OnConfigsSet;
+    public static event Action<LevelData> OnLevelDataChanged;
+    public static event Action OnConfigsSet;
+    public static event Action levelComplete;
+
     string FolderName = "LevelConfigs";
     LevelConfig[] LevelConfigs;
     LevelConfig currentLevel;
@@ -22,7 +26,7 @@ public class LevelManager : MonoBehaviour
     {
         // Subscribe to events
         GridManager.OnGridManagerInitialized += HandleGridManagerInitialized;
-        UIManager.OnGridUIManagerInitialised += HandleUIOnStart;
+        UIManager.OnUIManagerInitialised += HandleUIOnStart;
         BombManager.OnDestructibleDestroyed += HandleDestuctibleEvent;
 
 
@@ -62,10 +66,11 @@ public class LevelManager : MonoBehaviour
         if (isConfigsSet)
         {
             // Configurations are loaded, update the UI
-            UIManager.Instance.UpdateLevelName(currentLevel.name);
-            UIManager.Instance.UpdateCount(DestructablesCount);
-            Debug.Log(currentLevel.name);
-
+            LevelData levelData = new LevelData(currentLevel.levelName, currentLevel.DestructiblesCount);
+            OnLevelDataChanged?.Invoke(levelData);
+           // UIManager.Instance.UpdateLevelName(currentLevel.levelName);
+            //UIManager.Instance.UpdateObsticlesCount(DestructablesCount);
+            // UIManager.Instance.AddToLevels(LevelConfigs)
             // Unsubscribe from the event after handling the UI
             OnConfigsSet -= HandleUIOnStart;
         }
@@ -89,7 +94,12 @@ public class LevelManager : MonoBehaviour
     private void HandleDestuctibleEvent()
     {
         DestructablesCount--;
-        UIManager.Instance.UpdateCount(DestructablesCount);
+        UIManager.Instance.UpdateObsticlesCount(DestructablesCount);
+        if (DestructablesCount == 0)
+        {
+            levelComplete?.Invoke();
+        }
+        
         
     }
     private void SpawnPlayer(int index)
@@ -97,4 +107,6 @@ public class LevelManager : MonoBehaviour
         Vector2Int spawnPoint = spawnPoints[index];
         Instantiate(player, new Vector3(spawnPoint.x, 1, spawnPoint.y), Quaternion.identity);
     }
+
+ 
 }

@@ -13,13 +13,16 @@ public class BombManager : MonoBehaviour
     public static event Action OnDestructibleDestroyed;
     public static event Action<int> OnBombsCountChanged;
     // in this game I believe there should not be more than 5 bombs on the player so array size will be 5,
-    // if there should be more bombs - increse the array size in array intialization in start function
+    // if there should be more bombs - increse the array size in array intialization in on start function
     private GameObject[] BOMBS; 
     public int max_bombs = 1;
     private int bomb_count = 0;
+    public int explosionRange = 1;
     int explosionLayerMask;
 
-    public int explosionRange = 1;
+   
+
+    [Header("Prefabs")]
     public GameObject explosionEffect;
 
     
@@ -30,7 +33,7 @@ public class BombManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        UIManager.OnGridUIManagerInitialised += HandleUI;
+        UIManager.OnUIManagerInitialised += HandleUI;
     }
     void Update()
     {
@@ -150,6 +153,6 @@ public class BombManager : MonoBehaviour
     private void HandleUI()
     {
         UIManager.Instance.UpdateMaxBombsCount(max_bombs);
-        UIManager.Instance.UpdateCount(bomb_count);
+        UIManager.Instance.UpdateBombsCount(bomb_count);
     }
 }

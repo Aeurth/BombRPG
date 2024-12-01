@@ -16,7 +16,7 @@ MonoBehaviour:
   PWradiusCount: 2
   PWspeedCount: 2
   PWmaxBombsCount: 3
-  DestructiblesCount: 50
+  DestructiblesCount: 10
   SpawnPoints:
   - {x: 2, y: 2}
   - {x: 9, y: 9}

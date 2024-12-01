@@ -19,8 +19,9 @@ public class GridManager : MonoBehaviour
     private GridCell[,] grid;
     List<Vector2Int> usedPositionsForDestructibles;
 
-    public GameObject itemPrefab; //destructible object
-    public GameObject bombPrefab;
+    [Header("Spawnables Prefabs")]
+    public GameObject destructibePrefab; //destructible object
+    public GameObject bombPrefab; 
 
     [Header("PowerUp Prefabs")]
     [SerializeField] GameObject PwRadius;
@@ -94,7 +95,7 @@ public class GridManager : MonoBehaviour
             {
                 // Instantiate the item prefab at the position
                 Vector3 worldPosition = new Vector3(randomX, 0, randomY); // Adjust Y axis as needed for your game
-                Instantiate(itemPrefab, worldPosition, Quaternion.identity);
+                Instantiate(destructibePrefab, worldPosition, Quaternion.identity);
 
              // Add the item to the grid and the used positions set
                 grid[randomX, randomY].IsEmpty = false;
