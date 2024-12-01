@@ -1,25 +1,26 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-
+//TODO: see if possible to make gridManager local object to the levelManager ( other Grid manager dependancies are: BombManager)
+// otherwise change to event based system if its not too hard
+//TODO: seperate this class logic between LevelManager and Level calsses
 public class LevelManager: MonoBehaviour
 {
+    
     public static event Action<LevelData> OnLevelDataChanged;
     public static event Action OnConfigsSet;
     public static event Action levelComplete;
 
     LevelConfig[] LevelConfigs;
     LevelConfig currentLevel;
+    private int currentLevelIndex;
     Vector2Int[] spawnPoints;
     bool isConfigsSet = false;
     int DestructablesCount;
 
     [Header("Player stuff")]
-    [SerializeField] GameObject player;
-
-     
-
+    [SerializeField] GameObject playerPrefab;
+    private GameObject player;
 
     private void OnEnable()
     {
@@ -27,17 +28,16 @@ public class LevelManager: MonoBehaviour
         GridManager.OnGridManagerInitialized += HandleGridManagerInitialized;
         UIManager.OnUIManagerInitialised += HandleUIOnStart;
         BombManager.OnDestructibleDestroyed += HandleDestuctibleEvent;
-
+        levelComplete += OnLevelComple;
+        InputManager.nextClicked += LoadLevel;
+        
 
     }
     private void Start()
     {
         Debug.Log("LevelManager initialised");
         LoadAllLevelsConfigs();
-        SetUpLevelConfigs();
-        SpawnPlayer(0);
-        
-
+        LoadLevel();
     }
     private void LoadAllLevelsConfigs()
     {
@@ -46,18 +46,39 @@ public class LevelManager: MonoBehaviour
     }
     private void SetUpLevelConfigs()
     {
-        currentLevel = LevelConfigs[0];
+        currentLevel = LevelConfigs[currentLevelIndex];
         DestructablesCount = currentLevel.DestructiblesCount;
         spawnPoints = currentLevel.SpawnPoints;
         isConfigsSet= true;
         OnConfigsSet?.Invoke();
         Debug.Log("Level configs are setup");
     }
+    private void SaveLevelIndex(int levelIndex)
+    {
+        PlayerPrefs.SetInt("CurrentLevel", levelIndex);
+        PlayerPrefs.Save();
+    }
+    private int LoadLevelIndex()
+    {
+        return PlayerPrefs.HasKey("CurrentLevel") ? PlayerPrefs.GetInt("CurrentLevel") : 0;
+    }
     private void HandleGridManagerInitialized()
     {
-        // Perform actions that depend on the GridManager
-        FillLevelWithItems();
-        FillLevelWithPowerUps();
+        //perform actions that depend on level configs
+        if (isConfigsSet)
+        {
+            GridManager.Instance.NewGrid(currentLevel.gridSizeX, currentLevel.gridSizeY);
+            FillLevelWithItems();
+            FillLevelWithPowerUps();
+            // Unsubscribe from the event after handling the Grid
+            OnConfigsSet -= HandleGridManagerInitialized;
+        }
+        else // Subscribe to the event only if configs aren't loaded yet
+        {
+            OnConfigsSet -= HandleGridManagerInitialized; // Ensure it's not subscribed multiple times
+            OnConfigsSet += HandleGridManagerInitialized;
+        }
+        
     }
     private void HandleUIOnStart()
     {
@@ -103,8 +124,37 @@ public class LevelManager: MonoBehaviour
     private void SpawnPlayer(int index)
     {
         Vector2Int spawnPoint = spawnPoints[index];
-        Instantiate(player, new Vector3(spawnPoint.x, 1, spawnPoint.y), Quaternion.identity);
+
+        if (player == null)
+        {
+            Console.WriteLine($"{player} bitch");
+            player = Instantiate(playerPrefab, new Vector3(spawnPoint.x, 1, spawnPoint.y), Quaternion.identity);
+            player.SetActive(true);
+        }
+        else
+        {
+            player.transform.position = new Vector3(spawnPoint.x, 1, spawnPoint.y);
+            player.SetActive(true);
+        }
+        
+    }
+    private void OnLevelComple()
+    {
+        currentLevelIndex++;
+        SaveLevelIndex(currentLevelIndex);
+        ClearLevel();
     }
 
+    private void ClearLevel()
+    {
+        player.SetActive(false);
+    }
+    private void LoadLevel()
+    {
+        currentLevelIndex = LoadLevelIndex();
+        SetUpLevelConfigs();
+        SpawnPlayer(0);
+        
+    }
  
 }

@@ -126,7 +126,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8361198366442792972
 Transform:
   m_ObjectHideFlags: 0
@@ -273,6 +273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aefa53505da95f48809a5ab2f3bc7c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_bombs: 1
-  explosionRange: 1
+  maxBombs: 1
+  bombsCount: 0
   explosionEffect: {fileID: 4224882204331692598, guid: add486190bc4ec1428f898ffa8417373, type: 3}

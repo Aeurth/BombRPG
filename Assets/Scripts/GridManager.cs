@@ -108,6 +108,8 @@ public class GridManager : MonoBehaviour
     }
     public void FillGridWithPowerUp( string powerType, int count)
     {
+        if (count > usedPositionsForDestructibles.Count)
+            Console.WriteLine($"filling powerup:{powerType} exceeds obscticles count: {usedPositionsForDestructibles.Count}");
         for (int i = 0; i < count; i++)
         {
             switch (powerType)
@@ -150,6 +152,7 @@ public class GridManager : MonoBehaviour
     {
         int randomIndex = UnityEngine.Random.Range(0, usedPositionsForDestructibles.Count);
         Vector2Int position = usedPositionsForDestructibles[randomIndex];
+  
 
         if (grid[position.x, position.y].ContainsItem == true)
         {
@@ -159,8 +162,17 @@ public class GridManager : MonoBehaviour
         {
             Instantiate(ob, new Vector3(position.x, 1f, position.y), Quaternion.identity);
             grid[position.x, position.y].ContainsItem = true;
+
+            usedPositionsForDestructibles.Remove(position);
             return;
         }
     }
- 
+    public void NewGrid(int x, int y)
+    {
+        gridSizeX = x; gridSizeY = y;
+        grid = new GridCell[gridSizeX, gridSizeY];
+        usedPositionsForDestructibles = new List<Vector2Int>();
+        InitializeGrid();
+        
+    }
 }

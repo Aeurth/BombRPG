@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
+    public static event Action nextClicked;
+
     [SerializeField] private Button levels;
     [SerializeField] private Button next;
     [SerializeField] private GameObject levelsList;
@@ -20,10 +22,16 @@ public class InputManager : MonoBehaviour
     {
         levelsList.SetActive(true);
         levelCompletePopUp.SetActive(false);
+        SetLevelIndex(0);
     }
     private void OnNextClicked()
     {
         levelCompletePopUp.SetActive(false);
         //start next stage
+    }
+    private void SetLevelIndex(int levelIndex)
+    {
+        PlayerPrefs.SetInt("CurrentLevel", levelIndex);
+        PlayerPrefs.Save();
     }
 }
