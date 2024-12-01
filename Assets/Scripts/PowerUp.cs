@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerUp : MonoBehaviour
-
 {
     public enum Type{ 
         ExplosionRadius,
@@ -28,16 +27,15 @@ public class PowerUp : MonoBehaviour
         switch (type)
         {
             case Type.ExplosionRadius:
-                other.gameObject.GetComponent<BombManager>().explosionRange++;
+                other.GetComponent<BombManager>().IncreaseExplotionRange();
                 Destroy(this.gameObject);
                 break;
             case Type.PlayerSpeed:
-                other.gameObject.GetComponent<PlayerController>().moveSpeed++;
+                other.gameObject.GetComponent<PlayerController>().IncreaseSpeed();
                 Destroy(this.gameObject);
                 break;
             case Type.BombCount:
-                int bombCount = ++other.GetComponent<BombManager>().max_bombs;
-                UIManager.Instance.UpdateMaxBombsCount(bombCount);
+                other.GetComponent<BombManager>().IncreaseMaxBombsCount();
                 Destroy(this.gameObject);
                 break;
         }

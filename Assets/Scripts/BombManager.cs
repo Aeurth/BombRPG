@@ -1,26 +1,33 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 
+public struct BombsData
+{
+    public int maxBombsCount { get; }
+    public int bombsCount { get; }
+    public int explotionRange { get; }
+
+    public BombsData(int maxBombsCount, int bombsCount, int explotionRange)
+    {
+        this.maxBombsCount = maxBombsCount;
+        this.bombsCount = bombsCount;
+        this.explotionRange = explotionRange;
+    }
+}
 
 public class BombManager : MonoBehaviour
 {
-    
+    public static event Action<BombsData> OnBombsDataChanged;
     public static event Action OnDestructibleDestroyed;
-    public static event Action<int> OnBombsCountChanged;
+
     // in this game I believe there should not be more than 5 bombs on the player so array size will be 5,
     // if there should be more bombs - increse the array size in array intialization in on start function
     private GameObject[] BOMBS; 
-    public int max_bombs = 1;
-    private int bomb_count = 0;
-    public int explosionRange = 1;
+    public int maxBombs = 1;
+    public int bombsCount = 0;
+    private int explosionRange = 1;
     int explosionLayerMask;
-
-   
 
     [Header("Prefabs")]
     public GameObject explosionEffect;
@@ -44,7 +51,7 @@ public class BombManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (bomb_count < max_bombs)
+            if (bombsCount < maxBombs)
             {
                 PlaceBomb();
             }
@@ -64,9 +71,9 @@ public class BombManager : MonoBehaviour
             GameObject bomb = GridManager.Instance.PlaceBombAtPlayerPosition(transform.position);
             if (bomb != null)
             {
-                BOMBS[bomb_count] = bomb;
-                bomb_count++;
-                OnBombsCountChanged?.Invoke(bomb_count);
+                BOMBS[bombsCount] = bomb;
+                bombsCount++;
+                OnBombsDataChanged?.Invoke(GetCurrentData());
             }
         }
         else
@@ -82,7 +89,7 @@ public class BombManager : MonoBehaviour
     private void DetonateBombs()
     {
         //detonate bombs
-        for (int i = 0; i < bomb_count; i++)
+        for (int i = 0; i < bombsCount; i++)
         {
             Vector3 position = GetBombPosition(i);
 
@@ -98,17 +105,16 @@ public class BombManager : MonoBehaviour
     }
     private void ClearBombsArray()
     {
-        for (int i = 0; i < bomb_count; i++)
+        for (int i = 0; i < bombsCount; i++)
         {
             Vector3 bombPos = BOMBS[i].transform.position;
             GridManager.Instance.ClearGridCell(bombPos);
             BOMBS[i] = null;
             
         }
-        bomb_count = 0;
-        OnBombsCountChanged.Invoke(bomb_count);
+        bombsCount = 0;
+        OnBombsDataChanged?.Invoke(GetCurrentData());
     }
-
     private void ExplodeToDirection(Vector3 direction, Vector3 currentPosition, int range)
     {
         
@@ -142,6 +148,7 @@ public class BombManager : MonoBehaviour
                     GameObject destructible = colliders[i].gameObject;
                     GridManager.Instance.ClearGridCell(destructible.transform.position);
                     Destroy(destructible);
+       
                     OnDestructibleDestroyed?.Invoke();
                 }
             }
@@ -149,10 +156,26 @@ public class BombManager : MonoBehaviour
         
         return;
     }
-
+    private void ChangeBombsData(BombsData data)
+    {
+        
+    }
     private void HandleUI()
     {
-        UIManager.Instance.UpdateMaxBombsCount(max_bombs);
-        UIManager.Instance.UpdateBombsCount(bomb_count);
+        OnBombsDataChanged?.Invoke(GetCurrentData());
+    }
+    private BombsData GetCurrentData()
+    {
+        return new BombsData(maxBombs, bombsCount, explosionRange);
+    }
+    public void IncreaseExplotionRange(int value = 1)
+    {
+        explosionRange += value;
+        OnBombsDataChanged?.Invoke(GetCurrentData());
+    }
+    public void IncreaseMaxBombsCount(int value = 1)
+    {
+        maxBombs += value;
+        OnBombsDataChanged?.Invoke(GetCurrentData());
     }
 }

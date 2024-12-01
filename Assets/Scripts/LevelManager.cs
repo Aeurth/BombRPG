@@ -9,17 +9,16 @@ public class LevelManager: MonoBehaviour
     public static event Action OnConfigsSet;
     public static event Action levelComplete;
 
-    string FolderName = "LevelConfigs";
     LevelConfig[] LevelConfigs;
     LevelConfig currentLevel;
     Vector2Int[] spawnPoints;
     bool isConfigsSet = false;
+    int DestructablesCount;
 
     [Header("Player stuff")]
     [SerializeField] GameObject player;
 
-    [Header("Destructibles")]
-    [SerializeField] int DestructablesCount;
+     
 
 
     private void OnEnable()
@@ -42,7 +41,7 @@ public class LevelManager: MonoBehaviour
     }
     private void LoadAllLevelsConfigs()
     {
-        LevelConfigs = Resources.LoadAll<LevelConfig>(FolderName);
+        LevelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs");
 
     }
     private void SetUpLevelConfigs()
@@ -68,15 +67,12 @@ public class LevelManager: MonoBehaviour
             // Configurations are loaded, update the UI
             LevelData levelData = new LevelData(currentLevel.levelName, currentLevel.DestructiblesCount);
             OnLevelDataChanged?.Invoke(levelData);
-           // UIManager.Instance.UpdateLevelName(currentLevel.levelName);
-            //UIManager.Instance.UpdateObsticlesCount(DestructablesCount);
-            // UIManager.Instance.AddToLevels(LevelConfigs)
             // Unsubscribe from the event after handling the UI
             OnConfigsSet -= HandleUIOnStart;
         }
-        else
+        else // Subscribe to the event only if configs aren't loaded yet
         {
-            // Subscribe to the event only if configs aren't loaded yet
+ 
             OnConfigsSet -= HandleUIOnStart; // Ensure it's not subscribed multiple times
             OnConfigsSet += HandleUIOnStart;
         }
@@ -94,7 +90,9 @@ public class LevelManager: MonoBehaviour
     private void HandleDestuctibleEvent()
     {
         DestructablesCount--;
-        UIManager.Instance.UpdateObsticlesCount(DestructablesCount);
+        LevelData data = new LevelData(currentLevel.levelName, DestructablesCount);
+        OnLevelDataChanged?.Invoke(data);
+       
         if (DestructablesCount == 0)
         {
             levelComplete?.Invoke();

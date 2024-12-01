@@ -35,33 +35,18 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         LevelManager.OnLevelDataChanged += UpdateLevelData;
-        BombManager.OnBombsCountChanged += UpdateBombsCount;
+        BombManager.OnBombsDataChanged += UpdateBombsData;
         LevelManager.levelComplete += OnLevelCompleted;
     }
     private void OnDisable()
     {
         LevelManager.OnLevelDataChanged -= UpdateLevelData;
         LevelManager.levelComplete -= OnLevelCompleted;
+        BombManager.OnBombsDataChanged -= UpdateBombsData;
     }
     private void Start()
     {
         OnUIManagerInitialised?.Invoke();
-    }
-    public void UpdateObsticlesCount(int count)
-    {
-        objectsCount.text = count.ToString();
-    }
-    public void UpdateLevelName(string name) 
-    {
-        levelName.text = name;
-    }
-    public void UpdateMaxBombsCount(int count)
-    {
-        maxBombsCount.text = count.ToString();
-    }
-    public void UpdateBombsCount(int count)
-    {
-        bombsCount.text = count.ToString();
     }
     public void AddToLevels(LevelConfig[] LevelConfigs)
     {
@@ -83,17 +68,15 @@ public class UIManager : MonoBehaviour
         levelComplePopUp.SetActive(true);
     }
 
-    public void UpdateData(GameData gameData)
-    {
-        UpdateLevelName(gameData.LevelName);
-        UpdateBombsCount(gameData.PlacedBombCount);
-        UpdateMaxBombsCount(gameData.MaxBombCount);
-        UpdateObsticlesCount(gameData.ObsticlesCount);
-
-    }
     public void UpdateLevelData(LevelData data)
     {
         levelName.text = data.levelName;
         objectsCount.text = data.obsticlesCount.ToString();
+    }
+    public void UpdateBombsData(BombsData data)
+    {
+        maxBombsCount.text = data.maxBombsCount.ToString();
+        bombsCount.text = data.bombsCount.ToString();
+
     }
 }

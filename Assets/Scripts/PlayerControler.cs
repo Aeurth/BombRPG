@@ -69,5 +69,9 @@ public class PlayerController : MonoBehaviour
             Rigidbody.MoveRotation(Quaternion.Slerp(Rigidbody.rotation, toRotation, rotationSpeed * Time.fixedDeltaTime));
         }
     }
+    public void IncreaseSpeed(float value = 1)
+    {
+        moveSpeed += value;
+    }
 }
 
