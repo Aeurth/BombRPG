@@ -1,16 +1,20 @@
+using System;
 using UnityEngine;
+
 
 public class PlayerController : MonoBehaviour
 {
+    public static event Action<PlayerData> PlayerDataChanged;
     public Rigidbody Rigidbody { get; private set; }
     public float moveSpeed = 5f;
     public float rotationSpeed = 720f;
+    int health;
+
 
     public KeyCode inputUp = KeyCode.W;
     public KeyCode inputDown = KeyCode.S;
     public KeyCode inputRight = KeyCode.D;
     public KeyCode inputLeft = KeyCode.A;
-
 
     private Vector3 direction = Vector3.back;
 
@@ -21,10 +25,29 @@ public class PlayerController : MonoBehaviour
         Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
     }
+    private void Start()
+    {
+        health = 3;
+        PlayerDataChanged?.Invoke(new PlayerData(health));
+    }
     void Update()
     {
         HandleMovementDirection();
- 
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Explosion"))
+        {
+            TakeDamage();
+        }
+    }
+    public void TakeDamage(int damage = -1)
+    {
+        if( health > 0 )
+        {
+            PlayerDataChanged(new PlayerData(damage));
+        }
+       
     }
     private void FixedUpdate()
     {

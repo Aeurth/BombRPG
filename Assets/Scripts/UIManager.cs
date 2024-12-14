@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Experimental.RestService;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,9 +18,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI bombsCount;
     [SerializeField] TextMeshProUGUI maxBombsCount;
     [SerializeField] GameObject levelComplePopUp;
+    [SerializeField] GameObject playerHealtContainer;
 
     [Header("Prefabs")]
     [SerializeField] GameObject levelListItem;
+    [SerializeField] GameObject heartUI;
 
     private void Awake()
     {
@@ -37,37 +40,25 @@ public class UIManager : MonoBehaviour
         LevelManager.OnLevelDataChanged += UpdateLevelData;
         BombManager.OnBombsDataChanged += UpdateBombsData;
         LevelManager.levelComplete += OnLevelCompleted;
+        PlayerController.PlayerDataChanged += UpdatePlayerData;
     }
     private void OnDisable()
     {
         LevelManager.OnLevelDataChanged -= UpdateLevelData;
         LevelManager.levelComplete -= OnLevelCompleted;
         BombManager.OnBombsDataChanged -= UpdateBombsData;
+        PlayerController.PlayerDataChanged -= UpdatePlayerData;
+
     }
     private void Start()
     {
         OnUIManagerInitialised?.Invoke();
-    }
-    public void AddToLevels(LevelConfig[] LevelConfigs)
-    {
-        GameObject levelItem;
-        Transform levelName;
-
-        foreach (LevelConfig level in LevelConfigs)
-        {
-            levelItem = Instantiate(levelListItem, levelsList.transform);
-
-            levelName = levelItem.transform.GetChild(0);
-            levelName.GetComponent<Text>().text = level.name;
-
-        }
     }
     private void OnLevelCompleted()
     {
         levelsList.SetActive(false);
         levelComplePopUp.SetActive(true);
     }
-
     public void UpdateLevelData(LevelData data)
     {
         levelName.text = data.levelName;
@@ -77,6 +68,38 @@ public class UIManager : MonoBehaviour
     {
         maxBombsCount.text = data.maxBombsCount.ToString();
         bombsCount.text = data.bombsCount.ToString();
+
+    }
+    public void UpdatePlayerData(PlayerData data)
+    {
+        int healt = data.health;
+        UpdatePlayerHealthUI(data.health);
+    }
+    private void DestroyHearts(int count = 1)
+    {
+        if (playerHealtContainer.transform.childCount > 0)
+        {
+            GameObject heart = playerHealtContainer.transform.GetChild(0).gameObject;
+            Destroy(heart);
+        }
+    }
+    private void AddHearts(int count = 1)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            Instantiate(heartUI, playerHealtContainer.transform);
+        }
+    }
+    private void UpdatePlayerHealthUI(int updateCount)
+    {
+        if (updateCount > 0)
+        {
+            AddHearts(updateCount);
+        }
+        else if (updateCount < 0)
+        {
+            DestroyHearts(updateCount);
+        }
 
     }
 }

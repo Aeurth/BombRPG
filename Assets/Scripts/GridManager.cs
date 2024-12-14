@@ -70,7 +70,7 @@ public class GridManager : MonoBehaviour
 
         if (IsCellEmpty(gridX, gridY))
         {
-            Vector3 bombPosition = new Vector3(gridX, 0, gridY);
+            Vector3 bombPosition = new Vector3(gridX, 1/2f, gridY);
             GameObject bomb = Instantiate(bombPrefab, bombPosition, Quaternion.identity);
             grid[gridX, gridY].IsEmpty = false;
             grid[gridX, gridY].ContainsBomb = true;
@@ -94,7 +94,7 @@ public class GridManager : MonoBehaviour
             if (!usedPositionsForDestructibles.Contains(randomPosition) && !spawnPoints.Contains(randomPosition))
             {
                 // Instantiate the item prefab at the position
-                Vector3 worldPosition = new Vector3(randomX, 0, randomY); // Adjust Y axis as needed for your game
+                Vector3 worldPosition = new Vector3(randomX, 1, randomY); // Adjust Y axis as needed for your game
                 Instantiate(destructibePrefab, worldPosition, Quaternion.identity);
 
              // Add the item to the grid and the used positions set

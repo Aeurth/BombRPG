@@ -4,9 +4,9 @@ using UnityEngine;
 
 public struct BombsData
 {
-    public int maxBombsCount { get; }
-    public int bombsCount { get; }
-    public int explotionRange { get; }
+    public int maxBombsCount { get; private set; }
+    public int bombsCount { get; private set; }
+    public int explotionRange { get; private set; }
 
     public BombsData(int maxBombsCount, int bombsCount, int explotionRange)
     {
@@ -133,32 +133,38 @@ public class BombManager : MonoBehaviour
             //creating a collider in the target position to check if occupied by an object from explosion layer
             Collider[] colliders = Physics.OverlapBox(position, Vector3.one / 2f, Quaternion.identity, explosionLayerMask);
 
+
             //calls self recursively until finds an object
             if (colliders.Length == 0)
             { 
 
-                Instantiate(explosionEffect, new Vector3(position.x, 0, position.z), Quaternion.identity);
+                Instantiate(explosionEffect, new Vector3(position.x, 1/2f, position.z), Quaternion.identity);
+
                 int updatedRange = range + 1;
                 ExplodeToDirection(direction, position, updatedRange);
             }
             else
             {// destroys object at the end of recursive function if there is an object to be destroyed
-                for (int i = 0; i < colliders.Length; i++)
+                if (colliders[0].CompareTag("Destructible"))
                 {
-                    GameObject destructible = colliders[i].gameObject;
+                    GameObject destructible = colliders[0].gameObject;
                     GridManager.Instance.ClearGridCell(destructible.transform.position);
                     Destroy(destructible);
-       
                     OnDestructibleDestroyed?.Invoke();
                 }
+                else if (colliders[0].CompareTag("Player"))
+                {
+                    Instantiate(explosionEffect, new Vector3(position.x, 1 / 2f, position.z), Quaternion.identity);
+
+                    int updatedRange = range + 1;
+                    ExplodeToDirection(direction, position, updatedRange);
+                }
+                
+
             }
         }
         
         return;
-    }
-    private void ChangeBombsData(BombsData data)
-    {
-        
     }
     private void HandleUI()
     {

@@ -2,8 +2,14 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    public GameObject explosionEffect;
+    [SerializeField] GameObject explosionEffect;
+    Collider objectCollider;
 
+    private void Start()
+    {
+        objectCollider = GetComponent<Collider>();
+        objectCollider.isTrigger = true; // set the bomb to be walkable through and reactive to triggers
+    }
     public void Explode()
     {
         if (explosionEffect != null)
@@ -12,5 +18,12 @@ public class Bomb : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            objectCollider.isTrigger = false; // Become solid after the player leaves
+        }
+    }
+
 }
