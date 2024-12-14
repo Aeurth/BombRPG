@@ -18,8 +18,9 @@ public class LevelManager: MonoBehaviour
     bool isConfigsSet = false;
     int DestructablesCount;
 
-    [Header("Player stuff")]
+    [Header("prefabs")]
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject Tile;
     private GameObject player;
 
     private void OnEnable()
@@ -144,7 +145,12 @@ public class LevelManager: MonoBehaviour
         SaveLevelIndex(currentLevelIndex);
         ClearLevel();
     }
-
+    private void SetTileSize()
+    {
+        SpriteRenderer renderer = Tile.GetComponent<SpriteRenderer>();
+        renderer.size = new Vector2(currentLevel.gridSizeX, currentLevel.gridSizeY);
+        Tile.SetActive(true);
+    }
     private void ClearLevel()
     {
         player.SetActive(false);
@@ -153,6 +159,7 @@ public class LevelManager: MonoBehaviour
     {
         currentLevelIndex = LoadLevelIndex();
         SetUpLevelConfigs();
+        SetTileSize();
         SpawnPlayer(0);
         
     }

@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Level 2
   m_EditorClassIdentifier: 
   levelName: Level 2
-  gridSizeX: 10
-  gridSizeY: 10
-  PWradiusCount: 10
+  gridSizeX: 5
+  gridSizeY: 5
+  PWradiusCount: 2
   PWspeedCount: 2
   PWmaxBombsCount: 2
-  DestructiblesCount: 2
+  DestructiblesCount: 10
   SpawnPoints:
-  - {x: 5, y: 5}
+  - {x: 4, y: 4}
   - {x: 1, y: 1}
