@@ -27,7 +27,7 @@ public class InputManager : MonoBehaviour
     private void OnNextClicked()
     {
         levelCompletePopUp.SetActive(false);
-        //start next stage
+        nextClicked?.Invoke();
     }
     private void SetLevelIndex(int levelIndex)
     {

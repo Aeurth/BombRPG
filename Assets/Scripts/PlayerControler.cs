@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     public float rotationSpeed = 720f;
     int health;
+    [SerializeField] int maxHealth;
 
 
     public KeyCode inputUp = KeyCode.W;
@@ -27,8 +28,8 @@ public class PlayerController : MonoBehaviour
     }
     private void Start()
     {
-        health = 3;
-        PlayerDataChanged?.Invoke(new PlayerData(health));
+        health = maxHealth;
+        PlayerDataChanged?.Invoke(GetData());
     }
     void Update()
     {
@@ -41,13 +42,33 @@ public class PlayerController : MonoBehaviour
             TakeDamage();
         }
     }
-    public void TakeDamage(int damage = -1)
+    public void TakeDamage(int damage = 1)
     {
         if( health > 0 )
         {
-            PlayerDataChanged(new PlayerData(damage));
+            health -= damage;
+            PlayerDataChanged?.Invoke(GetData());
+            Debug.Log($"player health: {health}");
         }
        
+    }
+    public void Heal(int amount)
+    {
+        if (health == maxHealth)
+        {
+            return;
+        }
+        if (health + amount < maxHealth)
+        {
+            health += amount;
+            PlayerDataChanged?.Invoke(GetData());
+        }
+        else
+        {
+            health = maxHealth;
+            PlayerDataChanged?.Invoke(GetData());
+        }
+            
     }
     private void FixedUpdate()
     {
@@ -95,6 +116,10 @@ public class PlayerController : MonoBehaviour
     public void IncreaseSpeed(float value = 1)
     {
         moveSpeed += value;
+    }
+    private PlayerData GetData()
+    {
+        return new PlayerData(health, transform.position);
     }
 }
 

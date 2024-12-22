@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2566089768009737245}
   - component: {fileID: 7597056629934762978}
   - component: {fileID: 4808272800363868708}
-  - component: {fileID: 6988592511369496218}
   - component: {fileID: 4133396562540420635}
+  - component: {fileID: 6721074110204929436}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -85,8 +85,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &6988592511369496218
-SphereCollider:
+--- !u!114 &4133396562540420635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8505211753128333129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c1ce677fdaf144cab1ea0bd97d5a87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionEffect: {fileID: 4224882204331692598, guid: add486190bc4ec1428f898ffa8417373, type: 3}
+--- !u!65 &6721074110204929436
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -104,18 +117,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4133396562540420635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8505211753128333129}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66c1ce677fdaf144cab1ea0bd97d5a87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosionEffect: {fileID: 4224882204331692598, guid: add486190bc4ec1428f898ffa8417373, type: 3}

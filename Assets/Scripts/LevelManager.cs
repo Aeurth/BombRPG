@@ -10,6 +10,7 @@ public class LevelManager: MonoBehaviour
     public static event Action<LevelData> OnLevelDataChanged;
     public static event Action OnConfigsSet;
     public static event Action levelComplete;
+    public static event Action LevelLoaded;
 
     LevelConfig[] LevelConfigs;
     LevelConfig currentLevel;
@@ -20,6 +21,7 @@ public class LevelManager: MonoBehaviour
 
     [Header("prefabs")]
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject NPC_Prefab;
     [SerializeField] GameObject Tile;
     private GameObject player;
 
@@ -139,6 +141,12 @@ public class LevelManager: MonoBehaviour
         }
         
     }
+    private void SpawnNPC()
+    {
+        float randomX = UnityEngine.Random.Range(0, currentLevel.gridSizeX);
+        float randomY = UnityEngine.Random.Range(0, currentLevel.gridSizeY);
+        Instantiate(NPC_Prefab, new Vector3(randomX, 1, randomY), Quaternion.identity);
+    }
     private void OnLevelComple()
     {
         currentLevelIndex++;
@@ -151,6 +159,13 @@ public class LevelManager: MonoBehaviour
         renderer.size = new Vector2(currentLevel.gridSizeX, currentLevel.gridSizeY);
         Tile.SetActive(true);
     }
+    private void SetTileColiderSize()
+    {
+        BoxCollider collider = Tile.GetComponent<BoxCollider>();
+        collider.size = new Vector3(currentLevel.gridSizeX, currentLevel.gridSizeY, 0.2f);
+        collider.center = new Vector3(currentLevel.gridSizeX / 2, currentLevel.gridSizeY / 2, 0);
+
+    }
     private void ClearLevel()
     {
         player.SetActive(false);
@@ -161,7 +176,10 @@ public class LevelManager: MonoBehaviour
         SetUpLevelConfigs();
         SetTileSize();
         SpawnPlayer(0);
-        
+        LevelLoaded?.Invoke();
+        SpawnNPC();
+
+
     }
  
 }

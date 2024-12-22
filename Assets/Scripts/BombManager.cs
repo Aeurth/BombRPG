@@ -118,13 +118,14 @@ public class BombManager : MonoBehaviour
     private void ExplodeToDirection(Vector3 direction, Vector3 currentPosition, int range)
     {
         
-        // check if target position is in bounds of 10x10 grid
+        //create position where object collision will be tested
         Vector3 position = currentPosition + direction;
+        Vector2 position2D = new Vector2(position.x, position.z);
 
-        if (position.x == 10 || position.z == 10)
-            return;
-        if (position.x < 0 || position.z < 0)
-            return;
+        // check if target position is in grid bounds
+        Rect gridBounds = new Rect(1, 1, GridManager.Instance.gridSizeX - 1, GridManager.Instance.gridSizeY - 1);
+       // if (gridBounds.Contains(position2D))
+          //  Debug.Log($"Position: {position2D}");
 
         
 

@@ -6,7 +6,7 @@ using UnityEngine;
 public class exlpodeEffect : MonoBehaviour
 {
     public ParticleSystem system;
-    private BoxCollider collider;
+    private BoxCollider boxCollider;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,10 +19,10 @@ public class exlpodeEffect : MonoBehaviour
     }
     private void AddCollider()
     {
-        collider = this.AddComponent<BoxCollider>();
-        collider.tag = "Explosion";
-        collider.isTrigger = true;
+        boxCollider = this.AddComponent<BoxCollider>();
+        boxCollider.tag = "Explosion";
+        boxCollider.isTrigger = true;
         float size = 0.8f;
-        collider.size = new Vector3(size, size, size);
+        boxCollider.size = new Vector3(size, size, size);
     }
 }

@@ -72,7 +72,6 @@ public class UIManager : MonoBehaviour
     }
     public void UpdatePlayerData(PlayerData data)
     {
-        int healt = data.health;
         UpdatePlayerHealthUI(data.health);
     }
     private void DestroyHearts(int count = 1)
