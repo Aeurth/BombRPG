@@ -3,27 +3,28 @@ using UnityEngine;
 
 //TODO: see if possible to make gridManager local object to the levelManager ( other Grid manager dependancies are: BombManager)
 // otherwise change to event based system if its not too hard
-//TODO: seperate this class logic between LevelManager and Level calsses
+//TODO: seperate this class logic between LevelManager and newly created Level calss
 public class LevelManager: MonoBehaviour
 {
-    
     public static event Action<LevelData> OnLevelDataChanged;
     public static event Action OnConfigsSet;
     public static event Action levelComplete;
     public static event Action LevelLoaded;
 
+    //refactor this by only using LevelConfig object currentLevel and current level index in the code
     LevelConfig[] LevelConfigs;
     LevelConfig currentLevel;
     private int currentLevelIndex;
     Vector2Int[] spawnPoints;
     bool isConfigsSet = false;
     int DestructablesCount;
+    private GameObject player;
 
     [Header("prefabs")]
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject NPC_Prefab;
     [SerializeField] GameObject Tile;
-    private GameObject player;
+    
 
     private void OnEnable()
     {
@@ -40,7 +41,20 @@ public class LevelManager: MonoBehaviour
     {
         Debug.Log("LevelManager initialised");
         LoadAllLevelsConfigs();
-        LoadLevel();
+        currentLevelIndex = LoadLevelIndex();
+        SetUpLevelConfigs();
+    }
+    private void LoadLevel()
+    {
+        SetTileSize();
+        InitializeGrid();
+        FillLevelWithItems();
+        FillLevelWithPowerUps();
+        LevelLoaded?.Invoke();
+        SpawnPlayer(0);
+        SpawnNPC();
+
+
     }
     private void LoadAllLevelsConfigs()
     {
@@ -70,9 +84,7 @@ public class LevelManager: MonoBehaviour
         //perform actions that depend on level configs
         if (isConfigsSet)
         {
-            GridManager.Instance.NewGrid(currentLevel.gridSizeX, currentLevel.gridSizeY);
-            FillLevelWithItems();
-            FillLevelWithPowerUps();
+            LoadLevel();
             // Unsubscribe from the event after handling the Grid
             OnConfigsSet -= HandleGridManagerInitialized;
         }
@@ -143,6 +155,7 @@ public class LevelManager: MonoBehaviour
     }
     private void SpawnNPC()
     {
+        Debug.Log("spawned npc");
         float randomX = UnityEngine.Random.Range(0, currentLevel.gridSizeX);
         float randomY = UnityEngine.Random.Range(0, currentLevel.gridSizeY);
         Instantiate(NPC_Prefab, new Vector3(randomX, 1, randomY), Quaternion.identity);
@@ -159,27 +172,13 @@ public class LevelManager: MonoBehaviour
         renderer.size = new Vector2(currentLevel.gridSizeX, currentLevel.gridSizeY);
         Tile.SetActive(true);
     }
-    private void SetTileColiderSize()
-    {
-        BoxCollider collider = Tile.GetComponent<BoxCollider>();
-        collider.size = new Vector3(currentLevel.gridSizeX, currentLevel.gridSizeY, 0.2f);
-        collider.center = new Vector3(currentLevel.gridSizeX / 2, currentLevel.gridSizeY / 2, 0);
-
-    }
     private void ClearLevel()
     {
         player.SetActive(false);
     }
-    private void LoadLevel()
+    private void InitializeGrid()
     {
-        currentLevelIndex = LoadLevelIndex();
-        SetUpLevelConfigs();
-        SetTileSize();
-        SpawnPlayer(0);
-        LevelLoaded?.Invoke();
-        SpawnNPC();
-
-
+        GridManager.Instance.NewGrid(currentLevel.gridSizeX, currentLevel.gridSizeY);
     }
  
 }

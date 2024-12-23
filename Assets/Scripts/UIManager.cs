@@ -78,8 +78,8 @@ public class UIManager : MonoBehaviour
     {
         if (playerHealtContainer.transform.childCount > 0)
         {
-            GameObject heart = playerHealtContainer.transform.GetChild(0).gameObject;
-            Destroy(heart);
+             GameObject heart = playerHealtContainer.transform.GetChild(0).gameObject;
+             Destroy(heart);
         }
     }
     private void AddHearts(int count = 1)
@@ -89,8 +89,10 @@ public class UIManager : MonoBehaviour
             Instantiate(heartUI, playerHealtContainer.transform);
         }
     }
-    private void UpdatePlayerHealthUI(int updateCount)
+    private void UpdatePlayerHealthUI(int healthCount)
     {
+        int currentCount = playerHealtContainer.transform.childCount;
+        int updateCount = healthCount - currentCount;
         if (updateCount > 0)
         {
             AddHearts(updateCount);

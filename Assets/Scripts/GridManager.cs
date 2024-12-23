@@ -94,7 +94,7 @@ public class GridManager : MonoBehaviour
             if (!usedPositionsForDestructibles.Contains(randomPosition) && !spawnPoints.Contains(randomPosition))
             {
                 // Instantiate the item prefab at the position
-                Vector3 worldPosition = new Vector3(randomX, 1, randomY); // Adjust Y axis as needed for your game
+                Vector3 worldPosition = new Vector3(randomX, 0.6f, randomY); // Adjust Y axis as needed for your game
                 Instantiate(destructibePrefab, worldPosition, Quaternion.identity);
 
              // Add the item to the grid and the used positions set
