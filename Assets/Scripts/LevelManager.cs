@@ -142,7 +142,6 @@ public class LevelManager: MonoBehaviour
 
         if (player == null)
         {
-            Console.WriteLine($"{player} bitch");
             player = Instantiate(playerPrefab, new Vector3(spawnPoint.x, 1, spawnPoint.y), Quaternion.identity);
             player.SetActive(true);
         }
@@ -154,11 +153,10 @@ public class LevelManager: MonoBehaviour
         
     }
     private void SpawnNPC()
-    {
-        Debug.Log("spawned npc");
+    { 
         float randomX = UnityEngine.Random.Range(0, currentLevel.gridSizeX);
         float randomY = UnityEngine.Random.Range(0, currentLevel.gridSizeY);
-        Instantiate(NPC_Prefab, new Vector3(randomX, 1, randomY), Quaternion.identity);
+        Instantiate(NPC_Prefab, new Vector3(randomX, 0.6f, randomY), Quaternion.identity);
     }
     private void OnLevelComple()
     {

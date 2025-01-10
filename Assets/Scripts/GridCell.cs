@@ -4,30 +4,32 @@ using UnityEngine;
 
 public class GridCell
 {
-    public bool IsEmpty { get; set; } = true;
-    public bool ContainsItem { get; set; } = false;
-    public bool ContainsBomb { get; set; } = false;
-    public bool ContainsPlayer { get; set; } = false;
-    public bool IsSolid { get; set; } = false;
+    public Vector2Int position {  get; private set; }
+    public bool IsEmpty { get; set; }
+    public bool ContainsItem { get; set; }
 
     public GridCell()
     {
-        // Initially, the cell is empty
         IsEmpty = true;
+        ContainsItem = false;
+        position = new Vector2Int();
     }
-
-    // This method is useful for resetting the cell state
+    public GridCell(Vector2Int position)
+    {
+        IsEmpty = true;
+        ContainsItem = false;
+        this.position = position;
+    }
     public void ClearCell()
     {
         IsEmpty = true;
         ContainsItem = false;
-        ContainsBomb = false;
-        ContainsPlayer = false;
     }
     public void AddItem()
     {
         IsEmpty = false;
         ContainsItem = true;
+
     }
 }
 

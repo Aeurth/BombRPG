@@ -13,7 +13,7 @@ public class LevelNavMeshBaker : MonoBehaviour
 
     private void Awake()
     {
-        LevelManager.LevelLoaded += BakeNavMesh;
+        //LevelManager.LevelLoaded += BakeNavMesh;
     }
     // Start is called before the first frame update
     void Start()

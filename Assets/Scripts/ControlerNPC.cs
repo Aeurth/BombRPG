@@ -1,33 +1,89 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
+
 
 public class ControlerNPC : MonoBehaviour
 {
-    NavMeshAgent agent;
+    static event Action targetReached;
+    [SerializeField] float moveSpeed;
+    [SerializeField] int detectionRange;
+    private Coroutine movementCoroutine;
+    private Rigidbody rb;
+
     private void Awake()
     {
-        PlayerController.PlayerDataChanged += SetDirection;
+        targetReached += OnTargetreached;
     }
-    void SetDirection(PlayerData data)
+    private void Start()
     {
-        if (agent == null)
+        rb = GetComponent<Rigidbody>();
+        Debug.Log($"NPC start pos{rb.position}");
+        SetPath();
+    }
+
+
+    private void SetPath()
+    {
+        Vector2Int target = CheckForTarget();
+        List<Vector2Int> path = GridManager.Instance.GetPath(GetCurrentPosition2D(), target);
+
+        if (movementCoroutine != null)
         {
-            Debug.Log($"Nav Agent is null for {gameObject.name}");
+            StopCoroutine(movementCoroutine); // Stop any ongoing movement
+        }
+
+        if (path != null && path.Count > 1)
+        {
+            movementCoroutine = StartCoroutine(FollowPath(path));
+        }
+        else
+        {
+            Debug.Log("NPC does not have a path");
             return;
         }
-        Debug.Log($"agent reference:{agent.gameObject.name}");
-        Debug.Log($"player position:{data.position}");
-        agent.destination = data.position;
+
+        GridManager.OnGridManagerInitialized -= SetPath;
     }
-    private void OnCollisionEnter(Collision collision)
+
+    private IEnumerator FollowPath(List<Vector2Int> path)
     {
-        if(collision.gameObject.tag == "Ground")
+        foreach (var cell in path)
         {
-            agent = this.gameObject.AddComponent<NavMeshAgent>();
-            Debug.Log($"Nav Agent added to {agent.gameObject.name} after colliding with the ground");
+            Vector3 targetPosition = GridToWorldPosition(cell);
+
+            // Move toward the target position
+            while (Vector3.Distance(rb.position, targetPosition) > 0.1f)
+            {
+                rb.MovePosition(Vector3.MoveTowards(rb.position, targetPosition, moveSpeed * Time.deltaTime));
+                yield return null; // Wait for the next frame
+            }
+
+            yield return null; // Optional: Add a small pause at each step
         }
-       
+        Debug.Log("target reached!");
+        targetReached?.Invoke();
+    }
+
+    private Vector3 GridToWorldPosition(Vector2Int gridPosition)
+    {
+        // Convert grid coordinates to world coordinates
+        return new Vector3(gridPosition.x, rb.position.y, gridPosition.y);
+    }
+    private void OnTargetreached()
+    {
+        SetPath();
+
+    }
+    private Vector2Int CheckForTarget()
+    {
+        Vector2Int target = GridManager.Instance.GetEmptyCellInRange(GetCurrentPosition2D(), detectionRange);
+        Debug.Log($"NPC target:{target.x}, {target.y}");
+        return target;
+    }
+    private Vector2Int GetCurrentPosition2D()
+    {
+        return new Vector2Int(Mathf.RoundToInt(rb.position.x), Mathf.RoundToInt(rb.position.z));
     }
 }

@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 3039931463894255650}
   - component: {fileID: 3892633870449725651}
   - component: {fileID: 4204399684729956877}
-  - component: {fileID: -5595412281306455302}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -256,22 +255,3 @@ MonoBehaviour:
   maxBombs: 1
   bombsCount: 0
   explosionEffect: {fileID: 4224882204331692598, guid: add486190bc4ec1428f898ffa8417373, type: 3}
---- !u!114 &-5595412281306455302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6884946649879733577}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_OverrideArea: 0
-  m_Area: 0
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 1
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffff

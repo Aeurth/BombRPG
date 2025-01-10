@@ -23,7 +23,6 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         Rigidbody = GetComponent<Rigidbody>();
-        Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
     }
     private void Start()

@@ -6,6 +6,33 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+struct SearchBounds
+{
+    public int right { get; private set; }
+    public int left { get; private set; }
+    public int top { get; private set; }
+    public int bottom { get; private set; }
+
+    public SearchBounds(Vector2Int center, int range, int gridSizeX, int gridSizeY)
+    {
+        right = center.x + range;
+        if (right >= gridSizeX)
+            right = gridSizeX - 1; // Adjust to stay within bounds
+
+        left = center.x - range;
+        if (left < 0)
+            left = 0;
+
+        top = center.y + range;
+        if (top >= gridSizeY)
+            top = gridSizeY - 1; // Adjust to stay within bounds
+
+        bottom = center.y - range;
+        if (bottom < 0)
+            bottom = 0;
+    }
+}
+
 public class GridManager : MonoBehaviour
 {
     // Event that other scripts can subscribe to
@@ -55,7 +82,7 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < gridSizeY; y++)
             {
-                grid[x, y] = new GridCell();
+                grid[x, y] = new GridCell(new Vector2Int(x, y));
             }
         }
     }
@@ -73,7 +100,6 @@ public class GridManager : MonoBehaviour
             Vector3 bombPosition = new Vector3(gridX, 1/2f, gridY);
             GameObject bomb = Instantiate(bombPrefab, bombPosition, Quaternion.identity);
             grid[gridX, gridY].IsEmpty = false;
-            grid[gridX, gridY].ContainsBomb = true;
             return bomb;
         }
         return null;
@@ -175,4 +201,44 @@ public class GridManager : MonoBehaviour
         InitializeGrid();
         
     }
+    public List<Vector2Int> GetPath(Vector2Int currentPosition, Vector2Int target)
+    {
+        if(target.x < 0)
+        {
+            Debug.Log("recieved negative target values in: Grid.GetPath()");
+            return null;
+        }
+        List<Vector2Int> path = Pathfinding.FindPathBFS(grid, currentPosition, target);
+        return path;
+    }
+    public Vector2Int GetEmptyCellInRange(Vector2Int position, int range)
+    {
+        SearchBounds bounds = new SearchBounds(position, range, gridSizeX, gridSizeY);
+
+        // Iterate through the grid within the defined bounds
+        for (int i = bounds.left; i <= bounds.right; i++) 
+        {
+            for (int j = bounds.bottom; j <= bounds.top; j++) 
+            {
+                // Check if the cell is empty
+                if (grid[i, j].IsEmpty)
+                {
+                    return new Vector2Int(i, j); // Return the first empty cell found
+                }
+            }
+        }
+
+        // No empty cell found in range
+        return new Vector2Int(-1, -1); // Indicates failure to find an empty cell
+    }
+    public Vector2Int GetEmptyCellRadial(Vector2Int position, int range)
+    {
+        SearchBounds bounds = new SearchBounds(position, range, gridSizeX, gridSizeY);
+
+
+        //not implemented
+        return new Vector2Int(-1, -1); // Indicates failure to find an empty cell
+    }
+
+    
 }
