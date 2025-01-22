@@ -16,6 +16,8 @@ public struct BombsData
     }
 }
 
+
+//todo: refactor this class into player controler and the bomb itself, probably use raycasts insted of collision checking
 public class BombManager : MonoBehaviour
 {
     public static event Action<BombsData> OnBombsDataChanged;
@@ -41,11 +43,11 @@ public class BombManager : MonoBehaviour
     private void OnEnable()
     {
         UIManager.OnUIManagerInitialised += HandleUI;
+        AnimationEvents.DetonateEvent += DetonateBombs;
     }
     void Update()
     {
         HandleBombPlacement();
-        HandleBombDetonate();
     }
     private void HandleBombPlacement()
     {
@@ -54,14 +56,8 @@ public class BombManager : MonoBehaviour
             if (bombsCount < maxBombs)
             {
                 PlaceBomb();
+                OnBombsDataChanged?.Invoke(GetCurrentData());
             }
-        }
-    }
-    private void HandleBombDetonate()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            DetonateBombs();
         }
     }
     private void PlaceBomb()
@@ -167,10 +163,7 @@ public class BombManager : MonoBehaviour
         
         return;
     }
-    private void HandleUI()
-    {
-        OnBombsDataChanged?.Invoke(GetCurrentData());
-    }
+    
     private BombsData GetCurrentData()
     {
         return new BombsData(maxBombs, bombsCount, explosionRange);
@@ -183,6 +176,11 @@ public class BombManager : MonoBehaviour
     public void IncreaseMaxBombsCount(int value = 1)
     {
         maxBombs += value;
+        OnBombsDataChanged?.Invoke(GetCurrentData());
+    }
+
+    private void HandleUI()
+    {
         OnBombsDataChanged?.Invoke(GetCurrentData());
     }
 }

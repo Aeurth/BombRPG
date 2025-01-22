@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-struct SearchBounds
+public struct SearchBounds
 {
     public int right { get; private set; }
     public int left { get; private set; }
@@ -31,8 +32,17 @@ struct SearchBounds
         if (bottom < 0)
             bottom = 0;
     }
+    public SearchBounds(int left, int bottom, int right, int top )
+    {
+        this.right = right;
+        this.left = left;
+        this.top = top;
+        this.bottom = bottom;
+    }
 }
 
+
+//TODO: seperate path finding methods to pathfinding class and get Grid object by value each time for calculating path
 public class GridManager : MonoBehaviour
 {
     // Event that other scripts can subscribe to
@@ -215,29 +225,94 @@ public class GridManager : MonoBehaviour
     {
         SearchBounds bounds = new SearchBounds(position, range, gridSizeX, gridSizeY);
 
+        Vector2Int cell = SearchBox(bounds, position);
+
+        return cell;
+    }
+    private Vector2Int SearchBox(SearchBounds bounds, Vector2Int center)
+    {
         // Iterate through the grid within the defined bounds
-        for (int i = bounds.left; i <= bounds.right; i++) 
+        for (int i = bounds.left; i <= bounds.right; i++)
         {
-            for (int j = bounds.bottom; j <= bounds.top; j++) 
+            for (int j = bounds.bottom; j <= bounds.top; j++)
             {
                 // Check if the cell is empty
-                if (grid[i, j].IsEmpty)
+                if (grid[i, j].IsEmpty & new Vector2Int(i, j) != center)
                 {
                     return new Vector2Int(i, j); // Return the first empty cell found
                 }
             }
         }
 
-        // No empty cell found in range
-        return new Vector2Int(-1, -1); // Indicates failure to find an empty cell
-    }
-    public Vector2Int GetEmptyCellRadial(Vector2Int position, int range)
+        return new Vector2Int(-1, -1);//indicates failure
+    }private Vector2Int SearchByQuadrant(SearchBounds bounds, Vector2Int center)
     {
-        SearchBounds bounds = new SearchBounds(position, range, gridSizeX, gridSizeY);
+        Vector2Int cell = new Vector2Int(-1, -1);
+
+        SearchBounds Q1 = new SearchBounds(bounds.left, bounds.bottom, center.x, center.y);//left bottom
+        SearchBounds Q2 = new SearchBounds(bounds.left, center.y, center.x, bounds.top);//left top
+        SearchBounds Q3 = new SearchBounds(center.x, center.y, bounds.right, bounds.top);// right top
+        SearchBounds Q4 = new SearchBounds(center.x, bounds.bottom, bounds.right, center.y);//right bottom
 
 
-        //not implemented
-        return new Vector2Int(-1, -1); // Indicates failure to find an empty cell
+        //set the starting quadrant
+        int quadrant = UnityEngine.Random.Range(0, 4);
+        int checkedCount = 0;
+
+        while (checkedCount < 4)
+        {
+            if (quadrant == 0)
+            {
+                cell = SearchBox(Q1, center);
+                if (cell != new Vector2Int(-1, -1))
+                    return cell;
+
+                checkedCount++;
+                if (quadrant == 3)
+                    quadrant = 0;
+                else
+                    quadrant++;
+            }
+            if (quadrant == 1)
+            {
+                cell = SearchBox(Q2, center);
+                if (cell != new Vector2Int(-1, -1))
+                    return cell;
+                checkedCount++;
+                if (quadrant == 3)
+                    quadrant = 0;
+                else
+                    quadrant++;
+            }
+            if (quadrant == 2)
+            {
+                cell = SearchBox(Q3, center);
+                if (cell != new Vector2Int(-1, -1))
+                        return cell;
+                checkedCount++;
+                if (quadrant == 3)
+                    quadrant = 0;
+                else
+                    quadrant++;
+            }
+            if (quadrant == 3)
+            {
+                cell = SearchBox(Q4, center);
+                if (cell != new Vector2Int(-1, -1))
+                    return cell;
+                checkedCount++;
+                if (quadrant == 3)
+                    quadrant = 0;
+                else
+                    quadrant++;
+            }
+        
+        }
+
+        
+
+        Debug.Log("Search by quadrant did not find a target, returned negative value");
+        return cell;
     }
 
     

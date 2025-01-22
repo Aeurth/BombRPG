@@ -7,7 +7,6 @@ public class GridCell
     public Vector2Int position {  get; private set; }
     public bool IsEmpty { get; set; }
     public bool ContainsItem { get; set; }
-
     public GridCell()
     {
         IsEmpty = true;

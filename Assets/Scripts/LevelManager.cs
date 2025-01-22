@@ -52,7 +52,7 @@ public class LevelManager: MonoBehaviour
         FillLevelWithPowerUps();
         LevelLoaded?.Invoke();
         SpawnPlayer(0);
-        SpawnNPC();
+       // SpawnNPC();
 
 
     }

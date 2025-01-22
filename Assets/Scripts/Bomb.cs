@@ -5,6 +5,10 @@ public class Bomb : MonoBehaviour
     [SerializeField] GameObject explosionEffect;
     Collider objectCollider;
 
+    private void Awake()
+    {
+        AnimationEvents.DetonateEvent += Explode;
+    }
     private void Start()
     {
         objectCollider = GetComponent<Collider>();

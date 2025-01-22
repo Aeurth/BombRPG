@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Playables;
 
 
 public class PlayerController : MonoBehaviour
@@ -9,7 +10,10 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     public float rotationSpeed = 720f;
     int health;
-    [SerializeField] int maxHealth;
+    int maxHealth;
+    int bombsCount = 0;
+
+    Player player;
 
 
     public KeyCode inputUp = KeyCode.W;
@@ -19,20 +23,20 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 direction = Vector3.back;
 
-
-    private void Awake()
-    {
-        Rigidbody = GetComponent<Rigidbody>();
-
-    }
     private void Start()
     {
+
+        Rigidbody = this.GetComponent<Rigidbody>();
+        player = this.GetComponent<Player>();
+        player.Initialize(new IdleState());
         health = maxHealth;
         PlayerDataChanged?.Invoke(GetData());
+
     }
     void Update()
     {
         HandleMovementDirection();
+        HandlePlayerInputs();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -78,22 +82,31 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKey(inputUp))
         {
+
             direction = Vector3.forward;
-        }else if (Input.GetKey(inputDown))
+            
+        }
+        else if (Input.GetKey(inputDown))
         {
             direction = Vector3.back;
-        }else if (Input.GetKey(inputRight))
+            
+        }
+        else if (Input.GetKey(inputRight))
         {
             direction = Vector3.right;
+            
         }
         else if (Input.GetKey(inputLeft))
         {
             direction = Vector3.left;
+          
         }
-        else
+        else if(!Input.anyKey)
         {
+            
             direction = Vector3.zero;
         }
+
 
     }
     private void HandleMovement()
@@ -110,11 +123,39 @@ public class PlayerController : MonoBehaviour
 
             // Smoothly rotate the Rigidbody towards the movement direction
             Rigidbody.MoveRotation(Quaternion.Slerp(Rigidbody.rotation, toRotation, rotationSpeed * Time.fixedDeltaTime));
+
+
         }
+        
     }
     public void IncreaseSpeed(float value = 1)
     {
         moveSpeed += value;
+    }
+    private void HandlePlayerInputs()
+    {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            player.PlayAnimation("Dummy_root_Dummy_root_Pickup");
+        }
+        if(Input.GetMouseButtonDown(0))
+        {
+            //detonate bombs animation if there is any
+            if( bombsCount  > 0 )
+            {
+                //invoke event for each bomb to explode
+                player.PlayAnimation("Dummy_root_Dummy_root_Joy");
+            }
+            
+        }
+
+        if(direction != Vector3.zero)
+        {
+            player.SetAnimationParam(PlayerInputs.IsWalking, true);
+        }
+        else
+        {
+            player.SetAnimationParam(PlayerInputs.IsWalking, false);
+        }
     }
     private PlayerData GetData()
     {
