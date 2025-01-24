@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     int health;
     int maxHealth;
     int bombsCount = 0;
+    int maxBombsCount = 3;
 
     Player player;
 
@@ -23,6 +24,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 direction = Vector3.back;
 
+    private void OnEnable()
+    {
+        AnimationEvents.PlaceBombEvent += OnBombPlacement;
+    }
     private void Start()
     {
 
@@ -134,32 +139,43 @@ public class PlayerController : MonoBehaviour
     }
     private void HandlePlayerInputs()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            player.PlayAnimation("Dummy_root_Dummy_root_Pickup");
+        if (Input.GetKeyDown(KeyCode.Space) &
+            !player.IsBombCountAtMax()) 
+        {
+            Debug.Log("space pressed");
+            player.HandlePlayerInputs(PlayerInputs.IsPlacing);
         }
         if(Input.GetMouseButtonDown(0))
         {
-            //detonate bombs animation if there is any
-            if( bombsCount  > 0 )
-            {
-                //invoke event for each bomb to explode
-                player.PlayAnimation("Dummy_root_Dummy_root_Joy");
-            }
+            player.HandlePlayerInputs(PlayerInputs.IsDetonating);
             
         }
 
         if(direction != Vector3.zero)
         {
-            player.SetAnimationParam(PlayerInputs.IsWalking, true);
+            player.HandlePlayerInputs(PlayerInputs.IsWalking);
         }
-        else
+        else if (direction == Vector3.zero & !Input.anyKey)
         {
-            player.SetAnimationParam(PlayerInputs.IsWalking, false);
+            player.HandlePlayerInputs(PlayerInputs.IsIdle);
         }
+      
     }
     private PlayerData GetData()
     {
         return new PlayerData(health, transform.position);
+    }
+
+   private void OnBombPlacement(Vector3 position)
+    {
+        if (GridManager.Instance.PlaceBombAtPosition(position))
+        {
+            player.IncreaseBombCount();
+        }
+        else
+        {
+            Debug.Log("Bomb was not placed, cell is occupied");
+        }
     }
 }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,11 +8,22 @@ public class Player : MonoBehaviour
 {
     private PlayerState state;
     Animator animator;
+    public Rigidbody Rigidbody { get; private set; }
+    public int ExplosionRange { get; private set; }
+
+    public float moveSpeed = 5f;
+    public float rotationSpeed = 720f;
+    int health;
+    int maxHealth;
+    int bombsCount = 0;
+    int maxBombsCount = 3;
+    
 
     // Initialize the Heroine with a starting state
     public void Initialize(PlayerState initialState)
     {
-        //state = initialState;
+        state = initialState;
+        ExplosionRange = 1;
     }
     private void Start()
     {
@@ -64,6 +76,14 @@ public class Player : MonoBehaviour
         {
             animator.Play(stateName);
         }
+    }
+    public void IncreaseBombCount()
+    {
+        bombsCount++;
+    }
+    public bool IsBombCountAtMax()
+    {
+        return maxBombsCount - bombsCount < 1;
     }
 }
 

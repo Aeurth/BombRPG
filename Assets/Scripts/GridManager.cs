@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -78,6 +79,7 @@ public class GridManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject); // Optional: if you want the instance to persist across scenes
     }
+ 
     private void Start()
     {
         grid = new GridCell[gridSizeX, gridSizeY];
@@ -100,19 +102,21 @@ public class GridManager : MonoBehaviour
     {
         return grid[x, y].IsEmpty;
     }
-    public GameObject PlaceBombAtPlayerPosition(Vector3 playerPosition)
+
+    //place bomb at given position and return success bool
+    public bool PlaceBombAtPosition(Vector3 position)
     {
-        int gridX = Mathf.RoundToInt(playerPosition.x);
-        int gridY = Mathf.RoundToInt(playerPosition.z);
+        int gridX = Mathf.RoundToInt(position.x);
+        int gridY = Mathf.RoundToInt(position.z);
 
         if (IsCellEmpty(gridX, gridY))
         {
             Vector3 bombPosition = new Vector3(gridX, 1/2f, gridY);
-            GameObject bomb = Instantiate(bombPrefab, bombPosition, Quaternion.identity);
+            Instantiate(bombPrefab, bombPosition, Quaternion.identity);
             grid[gridX, gridY].IsEmpty = false;
-            return bomb;
+            return true;
         }
-        return null;
+        return false;
     }
     public void FillGridWithItems(int destructiblesCount, Vector2Int[] spawnPoints) 
     { 
@@ -245,7 +249,8 @@ public class GridManager : MonoBehaviour
         }
 
         return new Vector2Int(-1, -1);//indicates failure
-    }private Vector2Int SearchByQuadrant(SearchBounds bounds, Vector2Int center)
+    }
+    private Vector2Int SearchByQuadrant(SearchBounds bounds, Vector2Int center)
     {
         Vector2Int cell = new Vector2Int(-1, -1);
 

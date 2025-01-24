@@ -43,7 +43,7 @@ public class BombManager : MonoBehaviour
     private void OnEnable()
     {
         UIManager.OnUIManagerInitialised += HandleUI;
-        AnimationEvents.DetonateEvent += DetonateBombs;
+       // AnimationEvents.DetonateEvent += DetonateBombs;
     }
     void Update()
     {
@@ -64,13 +64,8 @@ public class BombManager : MonoBehaviour
     {
         if (GridManager.Instance != null)
         {
-            GameObject bomb = GridManager.Instance.PlaceBombAtPlayerPosition(transform.position);
-            if (bomb != null)
-            {
-                BOMBS[bombsCount] = bomb;
-                bombsCount++;
-                OnBombsDataChanged?.Invoke(GetCurrentData());
-            }
+           // GameObject bomb = GridManager.Instance.PlaceBombAtPlayerPosition(transform.position);
+     
         }
         else
         {
@@ -93,7 +88,7 @@ public class BombManager : MonoBehaviour
             ExplodeToDirection(Vector3.back, position, 0);
             ExplodeToDirection(Vector3.right, position, 0);
             ExplodeToDirection(Vector3.left, position, 0);
-            BOMBS[i].GetComponent<Bomb>().Explode();
+           // BOMBS[i].GetComponent<Bomb>().Explode();
             
         }
         //clear bombs array

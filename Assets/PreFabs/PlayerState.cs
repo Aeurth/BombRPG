@@ -40,6 +40,14 @@ public class IdleState : PlayerState
             player.SetAnimationParam(PlayerInputs.IsIdle, false);
             player.ChangeState(new RunningState());
         }
+        else if (playerInputs == PlayerInputs.IsPlacing)
+        {
+            player.ChangeState(new PlacingState());
+        }
+        else if (playerInputs == PlayerInputs.IsDetonating)
+        {
+            player.ChangeState(new DetonatingState());
+        }
     }
 
     public override void Update(Player player)
@@ -76,6 +84,14 @@ public class WalkingState : PlayerState
             player.SetAnimationParam(PlayerInputs.IsWalking, false);
             player.ChangeState(new RunningState());
         }
+        else if (playerInputs == PlayerInputs.IsPlacing)
+        {
+            player.ChangeState(new PlacingState());
+        }
+        else if (playerInputs == PlayerInputs.IsDetonating)
+        {
+            player.ChangeState(new DetonatingState());
+        }
     }
 
     public override void Update(Player player)
@@ -107,6 +123,14 @@ public class RunningState : PlayerState
             player.SetAnimationParam(PlayerInputs.IsRunning, false);
             player.ChangeState(new WalkingState());
         }
+        else if (playerInputs == PlayerInputs.IsPlacing)
+        {
+            player.ChangeState(new PlacingState());
+        }
+        else if (playerInputs == PlayerInputs.IsDetonating)
+        {
+            player.ChangeState(new DetonatingState());
+        }
     }
 
     public override void Update(Player player)
@@ -119,10 +143,13 @@ public class RunningState : PlayerState
 }
 public class PlacingState : PlayerState
 {
+    float animationDuration = 0.5f;
+    float duration = 0;
     public override void Enter(Player player)
     {
         //set the player animation to match current state
-        player.SetAnimationParam(PlayerInputs.IsPlacing, true);
+            player.PlayAnimation("Dummy_root_Dummy_root_Pickup");
+        
     }
     public override PlayerInputs GetState()
     {
@@ -130,24 +157,16 @@ public class PlacingState : PlayerState
     }
     public override void HandleInput(Player player, PlayerInputs playerInputs)
     {
-        if (playerInputs == PlayerInputs.IsWalking)
-        {
-            //turn off current player state animation
-            player.SetAnimationParam(PlayerInputs.IsPlacing, false);
-            player.ChangeState(new WalkingState());
-
-        }
-        else if (playerInputs == PlayerInputs.IsIdle)
-        {
-            //turn off current player state animation
-            player.SetAnimationParam(PlayerInputs.IsPlacing, false);
-            player.ChangeState(new IdleState());
-        }
+       
     }
 
     public override void Update(Player player)
     {
-        
+        duration++;
+        if(duration > animationDuration)
+        {
+            player.ChangeState(new IdleState());
+        }
     }
 }
 public class DetonatingState: PlayerState
